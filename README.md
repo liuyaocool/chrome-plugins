@@ -1,11 +1,13 @@
 # chrome
 
+## 开发文档
+
+https://developer.chrome.com/docs/extensions/mv3/manifest/
+
 ## 配置文件
 
 ```json
 {
-  // 官方文档：https://developer.chrome.com/docs/extensions/mv3/manifest/
-
   "manifest_version": 3,
   "name": "插件demo",
   "version": "1.0",
