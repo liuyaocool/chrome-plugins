@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "lyproxy",
+  "version": "1.0",
+  "description": "代理客户端插件",
+  "icons": {
+    "16": "img/icon.png",
+    "32": "img/icon.png",
+    "48": "img/icon.png",
+    "128": "img/icon.png"
+  },
+
+  "options_page": "options.html",
+
+  "action": {
+    "default_title": "点击打开配置"
+  },
+
+  "background": {
+    "service_worker": "bg.js"
+  },
+
+  "permissions": [
+    "proxy",
+    "webRequest",
+    "scripting",
+    "storage" //缓存API
+  ]
+}

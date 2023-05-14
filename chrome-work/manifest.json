@@ -1,0 +1,41 @@
+{
+    "manifest_version": 3,
+    "name": "工作插件",
+    "version": "1.0",
+    "description": "提高工作效率的插件",
+    "icons": {
+        "16": "img/icon128.png",
+        "32": "img/icon128.png",
+        "48": "img/icon128.png",
+        "128": "img/icon128.png"
+    },
+
+    "content_scripts": [
+        {
+            "run_at": "document_end",
+            "js":["inject.js"],
+            "css": ["inject.css"],
+            "matches": ["http://127.0.0.1/*", "*://*.21tb.com/*"]
+        },
+        {
+            "run_at": "document_end",
+            "css": ["yufaredis.css"],
+            "matches": ["*://yufaredis.21tb.com/redis/"]
+        }
+    ],
+
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'",
+        "sandbox": "sandbox allow-scripts; script-src 'self'; object-src 'self'"
+    },
+
+    "permissions": [
+        "activeTab",
+        "declarativeContent",
+        "scripting",
+        "contextMenus", //自定义创建右键菜单API
+        "tabs", //tab选项卡API
+        "storage", //缓存API
+        "webRequest" //监听浏览器请求API
+    ]
+} 

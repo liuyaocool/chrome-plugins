@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "http",
+  "version": "1.0",
+  "description": "发送站内http请求",
+  "icons": {
+    "16": "img/http.png",
+    "32": "img/http.png",
+    "48": "img/http.png",
+    "128": "img/http.png"
+  },
+
+  "action": {
+    "default_title": "点击开关插件"
+  },
+
+  "background": {
+    "service_worker": "bg.js"
+  },
+
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+//      "js":["inject.js"],
+      "css": ["inject.css"],
+      "matches":["<all_urls>"]
+    }
+  ],
+  
+  // 内容安全政策
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'",
+    "sandbox": "sandbox allow-scripts; script-src 'self'; object-src 'self'"
+  },
+    
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "scripting",
+    "contextMenus", //自定义创建右键菜单API
+    "tabs", //tab选项卡API
+    "storage", //缓存API
+    "webRequest" //监听浏览器请求API
+    // ...
+  ]
+}
