@@ -88,7 +88,7 @@ function m3u8Refresh() {
     window.performance.getEntries().forEach(item => addM3u8(item));
     let tmp = '', i = 0;
     for (const url in M3U8_MAP) {
-        tmp += `<button id="${url}">${i++}</button>`;
+        tmp += `<button id="${url}">${i++}:${M3U8_MAP[url].type}</button>`;
     }
     document.getElementById('m3u8_down_list').innerHTML = tmp;
     tmp = document.getElementById('m3u8_down_list').children;
@@ -141,6 +141,7 @@ class M3u8Handler {
     constructor(url, name) {
         this.url = url;
         this.name = name + '.ts';
+        this.type = 'm3u8';
         this.m3u8RespHtml = '';
         this.tsUrls = []; // 分段链接地址
         this.tsFiles = []; // 分段链接地址
@@ -249,8 +250,8 @@ class M3u8Handler {
         document.getElementById('m3u8_segments').children[idx].classList.add('downloading');
     }
     partProgress(idx, progress) {
-        document.getElementById('m3u8_segments').children[idx].style.background =
-            `linear-gradient(to right, #1c5e4e 0%, #1c5e4e ${(progress*100).toFixed()}%, #2c4b44 0%)`;
+        // document.getElementById('m3u8_segments').children[idx].style.background =
+        //     `linear-gradient(to right, #1c5e4e 0%, #1c5e4e ${(progress*100).toFixed()}%, #2c4b44 0%)`;
     }
     partEnd(idx) {
         let seg = document.getElementById('m3u8_segments').children[idx];
@@ -305,6 +306,7 @@ class Mp4Handler {
     constructor(url, name) {
         this.url = url;
         this.name = name + '.mp4';
+        this.type = 'mp4';
     }
     showInfo() {
         document.getElementById('m3u8_link').value = this.url;
