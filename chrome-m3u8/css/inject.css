@@ -33,6 +33,7 @@
 }
 
 #m3u8_link {
+    word-break: break-all;
     position: absolute;
     top: 108px;
     left: 10px;
