@@ -1,4 +1,3 @@
-
 checkIfExclude(location.host, () => {
     let httpUtil = document.createElement('div');
     httpUtil.id = 'm3u8-main';
@@ -63,7 +62,7 @@ function checkIfExclude(host, success) {
     chrome.storage.local.get(["ly_m3u8_options"]).then(res => {
         if (!res['ly_m3u8_options']) {
             success();
-        };
+        }
         let line = res['ly_m3u8_options'].split('\n'), hosts;
         for (let i = 0; i < line.length; i++) {
             hosts = line[i].split(',');
@@ -293,18 +292,18 @@ class M3u8Handler {
 }
 
 function genPartUrl(partUri, m3u8URL) {
-        if (partUri.indexOf('http') === 0) {
-            return partUri;
-        }
-        let domain = (m3u8URL.origin + m3u8URL.pathname).split('/');
-        if (partUri[0] === '/') {
-            return domain[0] + '//' + domain[2] + partUri;
-        } else {
-            domain.pop();
-            domain.push(partUri);
-            return domain.join('/');
-        }
+    if (partUri.indexOf('http') === 0) {
+        return partUri;
     }
+    let domain = (m3u8URL.origin + m3u8URL.pathname).split('/');
+    if (partUri[0] === '/') {
+        return domain[0] + '//' + domain[2] + partUri;
+    } else {
+        domain.pop();
+        domain.push(partUri);
+        return domain.join('/');
+    }
+}
 
 class Mp4Handler {
     constructor(url, name) {
@@ -312,12 +311,14 @@ class Mp4Handler {
         this.name = name + '.mp4';
         this.type = 'mp4';
     }
+
     showInfo() {
         document.getElementById('m3u8_link').value = this.url;
         document.getElementById('m3u8_response').innerHTML = '';
         document.getElementById('m3u8_segments').innerHTML =
             `<iframe src="${this.url}"></iframe>`;
     }
+
     startDownload(retryNum) {
         let that = this;
         ajax({
@@ -325,10 +326,10 @@ class Mp4Handler {
             type: "file",
             progress(ev) {
                 document.getElementById('m3u8_response').innerHTML =
-                    `<span>${(ev.loaded/ev.total*100).toFixed(2)}%</span>`;
+                    `<span>${(ev.loaded / ev.total * 100).toFixed(2)}%</span>`;
             },
             success(file) {
-                let blob = new Blob([file], { type: 'video/MP2T' });
+                let blob = new Blob([file], {type: 'video/MP2T'});
                 let a = document.createElement('a');
                 a.download = that.name;
                 a.href = URL.createObjectURL(blob);
@@ -348,9 +349,9 @@ class Decryptor {
         this.m3u8Url = m3u8Url;
         this.decode = (idx, file) => file;
         let keyMap = this.keyMap = {};
-        keyLine.substr('#EXT-X-KEY'.length+1).split(',').forEach(attr => {
+        keyLine.substr('#EXT-X-KEY'.length + 1).split(',').forEach(attr => {
             var sps = attr.split('=');
-            keyMap[sps[0]] = ('"' == sps[1][0] ? sps[1].substr(1, sps[1].length-2) : sps[1]) || '';
+            keyMap[sps[0]] = ('"' == sps[1][0] ? sps[1].substr(1, sps[1].length - 2) : sps[1]) || '';
         });
 
         switch (keyMap.METHOD) {
