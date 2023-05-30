@@ -23,7 +23,7 @@
   "content_scripts": [
     {
       "run_at": "document_end",
-      "js":["js/inject.js"],
+      "js":["js/aes128.js", "js/inject.js"],
       "css": ["css/inject.css"],
       "matches":["<all_urls>"],
       "all_frames": true

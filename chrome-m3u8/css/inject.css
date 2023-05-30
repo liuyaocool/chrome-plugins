@@ -25,6 +25,7 @@
 }
 
 #m3u8_down_list {
+    overflow: auto;
     position: absolute;
     left: 100px;
     right: 10px;
