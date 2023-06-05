@@ -1,4 +1,45 @@
-class AESDecrypt {
+class Decryptor {
+
+    constructor(m3u8Url) {
+        this.m3u8Url = m3u8Url;
+        this.decode = (idx, file) => file;
+        this.keyMap = {};
+    }
+
+    init(keyLine) {
+        let keyMap = this.keyMap;
+        keyLine.substr('#EXT-X-KEY'.length + 1).split(',').forEach(attr => {
+            var sps = attr.split('=');
+            keyMap[sps[0]] = ('"' == sps[1][0] ? sps[1].substr(1, sps[1].length - 2) : sps[1]) || '';
+        });
+
+        switch (keyMap.METHOD) {
+            case 'AES-128': this.aes128Init(); break;
+        }
+    }
+
+    aes128Init() {
+        this.aesIv = this.keyMap.IV ? new TextEncoder().encode(this.keyMap.IV).buffer : null;
+        let that = this;
+        ajax({
+            url: genPartUrl(that.keyMap.URI, new URL(that.m3u8Url)),
+            type: "file",
+            success(file) {
+                that.decryptor = new AES128();
+                that.decryptor.expandKey(file);
+                that.decode = that.aes128Decode;
+            }
+        });
+    }
+
+    aes128Decode(idx, file) {
+        let iv = this.aesIv ||
+            new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, idx]).buffer;
+        return this.decryptor.decryptsi(iv, file);
+    }
+}
+
+class AES128 {
     constructor() {
         this.rcon = [0x0, 0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36];
         this.subMix = [new Uint32Array(256), new Uint32Array(256), new Uint32Array(256), new Uint32Array(256)];

@@ -23,7 +23,7 @@
   "content_scripts": [
     {
       "run_at": "document_end",
-      "js":["js/aes128.js", "js/inject.js"],
+      "js":["js/common.js", "js/decryptor.js", "js/handlers.js", "js/inject.js"],
       "css": ["css/inject.css"],
       "matches":["<all_urls>"],
       "all_frames": true
@@ -35,8 +35,20 @@
     "extension_pages": "script-src 'self'; object-src 'self'",
     "sandbox": "sandbox allow-scripts; script-src 'self'; object-src 'self'"
   },
-    
+
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules_1.json"
+      }
+    ]
+  },
+
   "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
     "activeTab",
     "declarativeContent",
     "scripting",
