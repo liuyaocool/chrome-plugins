@@ -40,10 +40,8 @@ function ajax(options) {
             let status = xhr.status;
             if (status >= 200 && status < 300) {
                 options.success && options.success(xhr.response);
-                resolve && resolve(xhr.response);
             } else {
                 options.fail && options.fail(status);
-                reject && reject(status);
             }
         }
     };

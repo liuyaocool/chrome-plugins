@@ -3,36 +3,38 @@ document.getElementById('ly_proxy_config').onblur = e => {
     if (!e.target.value) return;
     try {
         e.target.value = JSON.stringify(JSON.parse(e.target.value), null, 4);
-        showMsg("info", "格式化完成");
+        showMsg('I', "格式化完成");
     } catch (e) {
-        showMsg("error", "格式化失败: " + e);
+        showMsg('E', "格式化失败: " + e);
     }
 };
 
+let cacheIds = ['ly_proxy_config', 'ly_proxy_remote_url'];
 window.onbeforeunload = ev => {
-    sessionStorage.config = document.getElementById('ly_proxy_config').value || '';
+    sessionStorage.sign = 1;
+    cacheIds.forEach(id => sessionStorage[id] = document.getElementById(id).value) || '';
 }
-
-if (sessionStorage.config) {
-    document.getElementById('ly_proxy_config').value = sessionStorage.config;
-    showMsg("info", "配置已从 session 加载");
+if (sessionStorage.sign) {
+    cacheIds.forEach(id => document.getElementById(id).value = sessionStorage[id]);
+    showMsg('I', "配置已从 session 加载");
 } else {
-    chrome.storage.local.get(["lyproxy_options"]).then(res => {
-        if (!res['lyproxy_options']) return;
-        document.getElementById('ly_proxy_config').value = res['lyproxy_options'];
-        showMsg("info", "配置已从 storage 加载")
+    chrome.storage.local.get(cacheIds).then(res => {
+        if (!res) return;
+        for (let id in res) document.getElementById(id).value = res[id];
+        showMsg('I', "配置已从 storage 加载");
     });
 }
 
 document.getElementById('ly_proxy_save').onclick = e => {
     try {
         saveProxy(e);
-        showMsg("info","保存完成");
+        showMsg('I',"保存完成");
     } catch (e) {
-        showMsg("error", "保存失败: " + e);
+        showMsg('E', "保存失败: " + e);
     }
 }
 function saveProxy(e) {
+    let toJson = obj => {return JSON.stringify(obj).replaceAll('"', "'");};
     let text = document.getElementById('ly_proxy_config').value;
     let cfg = handleConfig(text);
     let pac_script = `
@@ -55,51 +57,40 @@ function saveProxy(e) {
         },
         function() {}
     );
-    chrome.storage.local.set({"lyproxy_options": text});
+    chrome.storage.local.set({"ly_proxy_config": text});
 }
 
 document.getElementById('ly_proxy_temp').onclick = e => {
-    document.getElementById('ly_proxy_config').value =
-        `{
-    "global_proxy": "127.0.0.1:9092",
-    "special_proxy": {
-        "127.0.0.1:9091": [
-            "openai.com"
-        ]
-    },
-    "exclude_prefix": [
-        "10", 
-        "127", 
-        "172", 
-        "192"    
-    ],
-    "exclude_suffix": [
-        "liuyao.link",
-        "liuyao.ink",
-        "baidu.com",
-        "bilibili.com",
-        "21tb.com",
-        "tapd.cn",
-        "aliyun.com",
-        "csdn.net",
-        "qq.com",
-        "zhihu.com",
-        "gitee.com",
-        "mashibing.com",
-        "iqiyi.com",
-        "youku.com",
-        "huawei.com",
-        "sohu.com"
-    ]
-}`;
+    getConfig(chrome.runtime.getURL('config.json'), resp => {
+        document.getElementById('ly_proxy_config').value = resp;
+        showMsg('I', '已加载 本地配置模板');
+    });
+}
+
+document.getElementById('ly_proxy_remote_url').onblur = e => {
+    chrome.storage.local.set({'ly_proxy_remote_url': e.target.value});
+};
+
+document.getElementById('ly_proxy_remote').onclick = e => {
+    let url = document.getElementById('ly_proxy_remote_url').value;
+    if (!url) {
+        showMsg('E', '远程配置url 为空');
+        return;
+    }
+    getConfig(url, resp => {
+        document.getElementById('ly_proxy_config').value = resp;
+        showMsg('I', '已加载 远程配置');
+    }, failResp => {
+        showMsg('E', failResp);
+    });
 }
 
 document.getElementById('ly_proxy_check_proxy').oninput = e => {
     if (!e.target.value) {
-        showMsg('info', '');
+        showMsg('I', '');
         return;
     }
-    showMsg('info', `使用代理：${FindProxyForURL('', e.target.value)}`);
+    showMsg('I', `使用代理：${FindProxyForURL('', e.target.value)}`);
 }
 
 function handleConfig(text) {
@@ -168,15 +159,27 @@ function matchProxy(host, globalProxy, prefix, suffix) {
     return "PROXY " + globalProxy;
 }
 
+function getConfig(url, success, fail) {
+    if (!url) return;
+    let xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                success && success(xhr.response);
+            } else {
+                fail && fail(xhr.response);
+            }
+        }
+    };
+    xhr.open("GET", url, true);
+    xhr.send(null);
+}
+
 function showMsg(type, str) {
     var msg = document.getElementById('ly_proxy_msg');
     msg.innerHTML = str;
     switch (type) {
-        case "info": msg.style.color = "#00ffd0fa"; break;
-        case "error": msg.style.color = "#ff3333fa"; break;
+        case "I": msg.style.color = "#00ffd0fa"; break;
+        case "E": msg.style.color = "#ff3333fa"; break;
     }
-}
-
-function toJson(obj) {
-    return JSON.stringify(obj).replaceAll('"', "'")
 }

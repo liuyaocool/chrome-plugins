@@ -23,7 +23,7 @@
             max-width: calc(100% - 20px);
             height: calc(100% - 300px);
         }
-        #ly_proxy_check_proxy {
+        #ly_proxy_check_proxy, #ly_proxy_remote_url {
             width: calc(100% - 20px);
         }
         #ly_proxy_msg {
@@ -54,8 +54,11 @@
 <textarea id="ly_proxy_config" spellcheck="false"></textarea>
 <input type="button" id="ly_proxy_save" value="保存">
 <input type="button" id="ly_proxy_temp" value="配置模板">
+<input type="button" id="ly_proxy_remote" value="加载远程配置">
 <span id="ly_proxy_introduce">优先级：special_proxy(单独指定) > exclude_suffix(后缀) > exclude_prefix(前缀) > global_proxy(全局)</span>
 <br>
+<input type="text" id="ly_proxy_remote_url" placeholder="远程配置url, 仅支持get简单请求"
+       value="https://raw.githubusercontent.com/liuyaocool/chrome-plugins/main/chrome-proxy/config.json">
 <input id="ly_proxy_check_proxy" type="text" placeholder="这里输入域名 验证代理">
 <br>
 <span id="ly_proxy_msg"></span>

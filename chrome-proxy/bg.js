@@ -1,16 +1,6 @@
 chrome.action.onClicked.addListener((tab) => {
     chrome.runtime.openOptionsPage();
-    // chrome.scripting.executeScript({
-    //     target: { tabId: tab.id },
-    //     // files: ["op.js"]
-    //     func: openConfig
-    // });
 });
-
-function openConfig() {
-    // chrome.runtime.id
-    window.open(chrome.runtime.getURL('options.html'));
-}
 
 var config = {
     mode: "fixed_servers",

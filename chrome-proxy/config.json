@@ -1,0 +1,36 @@
+{
+    "global_proxy": "127.0.0.1:9091",
+    "special_proxy": {
+        "127.0.0.1:9091": [
+            "openai.com"
+        ]
+    },
+    "exclude_prefix": [
+        "10",
+        "127",
+        "172",
+        "192"
+    ],
+    "exclude_suffix": [
+        "liuyao.link",
+        "liuyao.ink",
+        "baidu.com",
+        "bilibili.com",
+        "21tb.com",
+        "tapd.cn",
+        "aliyun.com",
+        "csdn.net",
+        "qq.com",
+        "zhihu.com",
+        "gitee.com",
+        "mashibing.com",
+        "iqiyi.com",
+        "youku.com",
+        "huawei.com",
+        "sohu.com",
+        "sanweihou.com",
+        "taobao.com",
+        "qifu-api.baidubce.com",
+        "163.com"
+    ]
+}
