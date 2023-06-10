@@ -63,7 +63,7 @@ function saveProxy(e) {
 document.getElementById('ly_proxy_temp').onclick = e => {
     getConfig(chrome.runtime.getURL('config.json'), resp => {
         document.getElementById('ly_proxy_config').value = resp;
-        showMsg('I', '已加载 本地配置模板');
+        showMsg('I', '已加载本地配置模板, 请点击保存');
     });
 }
 
@@ -79,7 +79,7 @@ document.getElementById('ly_proxy_remote').onclick = e => {
     }
     getConfig(url, resp => {
         document.getElementById('ly_proxy_config').value = resp;
-        showMsg('I', '已加载 远程配置');
+        showMsg('I', '已加载远程配置, 请点击保存');
     }, failResp => {
         showMsg('E', failResp);
     });
