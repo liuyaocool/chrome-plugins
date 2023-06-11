@@ -16,7 +16,7 @@ checkIfExclude(location.host, () => {
     document.body.appendChild(httpUtil);
 
     document.getElementById('m3u8_refresh_btn').onclick = e => {
-        m3u8Refresh();
+        m3u8BtnRefresh();
     }
 
     document.getElementById('m3u8_down_btn').onclick = e => {
@@ -38,7 +38,7 @@ checkIfExclude(location.host, () => {
         var aa = document.getElementById('m3u8-main').style;
         if (aa.display == 'none') {
             aa.display = '';
-            m3u8Refresh();
+            m3u8BtnRefresh();
         } else {
             aa.display = 'none';
         }
@@ -99,7 +99,7 @@ const M3U8_NOT = ['js', 'css', 'ts', 'png', 'jpg', 'gif', 'ico', 'woff2', 'ts', 
 const M3U8_TYPE = {};
 const M3U8_MAP = {};
 
-function m3u8Refresh() {
+function m3u8BtnRefresh() {
     let tmp = '', i = 0;
     for (const url in M3U8_MAP) {
         if ('demo' == M3U8_MAP[url].type) continue;
@@ -114,23 +114,9 @@ function m3u8Refresh() {
     }
 }
 
-const logUrls = [
-    'https://cn.pornhub.com/svvt/add',
-    'https://cn.pornhub.com/front/menu_livesex'
-];
-function log(m3u8URL, url, split) {
-    let idx = logUrls.indexOf(m3u8URL);
-    if (idx >= 0) {
-        let date = new Date();
-        console.log(`${idx} ${split} ${date.getSeconds()}.${date.getMilliseconds()} ${split} ${M3U8_TYPE[m3u8URL]} 
-        ${split} ${url}
-        ${split} ${JSON.stringify(M3U8_TYPE)}`);
-    }
-}
-
+// 此方法会在多个iframe中被执行,可能会出现多个iframe请求同一个url导致多访问题
 function addM3u8(url) {
     let name, m3u8URL, xhr;
-    // console.log(`-----\n- ${url}\n- ${m3u8URL}`);
     if (M3U8_MAP[url] || !url.startsWith('http')) return;
     m3u8URL = new URL(url);
     name = m3u8URL.pathname.split('.');
@@ -141,10 +127,7 @@ function addM3u8(url) {
         case 'm3u8': M3U8_MAP[url] = new M3u8Handler(url, name).init(); return;
         case 'mp4': M3U8_MAP[url] = new Mp4Handler(url, name); return;
     }
-    // console.log(url);
-    // log(m3u8URL, url, '::');
     M3U8_TYPE[m3u8URL] = false;
-    // log(m3u8URL, url, '--');
     xhr = new XMLHttpRequest();
     xhr.open("HEAD", url, false);
     xhr.send();
@@ -159,5 +142,4 @@ function addM3u8(url) {
             M3U8_MAP[url] = new Mp4Handler(url, name);
             break;
     }
-    // log(m3u8URL, url, '>>');
 }
