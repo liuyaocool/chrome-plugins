@@ -94,10 +94,12 @@ function downClick(isStream) {
     link && M3U8_MAP[link] && M3U8_MAP[link].startDownload(isStream);
 }
 
+const M3U8_NOT = ['js', 'css', 'ts', 'png', 'jpg', 'gif', 'ico', 'woff2', 'ts', 'svg', 'json', 'html'];
+// { "url不带?后的参数": 'm3u8' || 'mp4' || 'loading' || false(非任何视频api) }
+const M3U8_TYPE = {};
 const M3U8_MAP = {};
 
 function m3u8Refresh() {
-    window.performance.getEntries().forEach(item => addM3u8(item.name));
     let tmp = '', i = 0;
     for (const url in M3U8_MAP) {
         if ('demo' == M3U8_MAP[url].type) continue;
@@ -112,29 +114,50 @@ function m3u8Refresh() {
     }
 }
 
-function addM3u8(url) {
-    let id = url, name;
-    if (M3U8_MAP[id] || !url.startsWith('http')) return;
-    let type = new URL(url).pathname.split('/');
-    type = type[type.length-1] || (type.length > 1 ? type[type.length-2] : "");
-    name = type.split('.');
-    if (['js', 'css', 'ts', 'png', 'jpg', 'gif', 'ico', 'woff2', 'svg', 'json', 'ts', 'html']
-        .indexOf(name[name.length-1]) >= 0) return;
-
-    try { name = window.top.document.title; } catch (e) { console.warn(e); }
-    name = name || 'video';
-    if (type.indexOf('m3u8') > 0) {
-        M3U8_MAP[id] = new M3u8Handler(url, name).init();
-        return;
+const logUrls = [
+    'https://cn.pornhub.com/svvt/add',
+    'https://cn.pornhub.com/front/menu_livesex'
+];
+function log(m3u8URL, url, split) {
+    let idx = logUrls.indexOf(m3u8URL);
+    if (idx >= 0) {
+        let date = new Date();
+        console.log(`${idx} ${split} ${date.getSeconds()}.${date.getMilliseconds()} ${split} ${M3U8_TYPE[m3u8URL]} 
+        ${split} ${url}
+        ${split} ${JSON.stringify(M3U8_TYPE)}`);
     }
-    M3U8_MAP[id] = type.indexOf('mp4') > 0
-        ? new Mp4Handler(url, name) : new DemoHandler(url, name);
-    ajax({
-        url: url,
-        success: m3u8Str => {
-            if (m3u8Str && m3u8Str.startsWith('#EXTM3U')) {
-                M3U8_MAP[id] = new M3u8Handler(url, name).handler(m3u8Str);
-            }
-        }
-    });
+}
+
+function addM3u8(url) {
+    let name, m3u8URL, xhr;
+    // console.log(`-----\n- ${url}\n- ${m3u8URL}`);
+    if (M3U8_MAP[url] || !url.startsWith('http')) return;
+    m3u8URL = new URL(url);
+    name = m3u8URL.pathname.split('.');
+    m3u8URL = `${m3u8URL.origin}${m3u8URL.pathname}`;
+    if (M3U8_NOT.indexOf(name[name.length-1]) >= 0 || false === M3U8_TYPE[m3u8URL]) return;
+    try { name = window.top.document.title;} catch (e) {name = 'video';}
+    switch (M3U8_TYPE[m3u8URL] || 'aaqq') {
+        case 'm3u8': M3U8_MAP[url] = new M3u8Handler(url, name).init(); return;
+        case 'mp4': M3U8_MAP[url] = new Mp4Handler(url, name); return;
+    }
+    // console.log(url);
+    // log(m3u8URL, url, '::');
+    M3U8_TYPE[m3u8URL] = false;
+    // log(m3u8URL, url, '--');
+    xhr = new XMLHttpRequest();
+    xhr.open("HEAD", url, false);
+    xhr.send();
+    switch (xhr.getResponseHeader('Content-Type')) {
+        case 'application/vnd.apple.mpegurl':
+            M3U8_TYPE[m3u8URL] = 'm3u8';
+            M3U8_MAP[url] = new M3u8Handler(url, name).init();
+            break;
+        case 'video/mp4':
+        case 'video/webm':
+            M3U8_TYPE[m3u8URL] = 'mp4';
+            M3U8_MAP[url] = new Mp4Handler(url, name);
+            break;
+    }
+    // log(m3u8URL, url, '>>');
 }
