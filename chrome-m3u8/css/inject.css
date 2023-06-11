@@ -130,10 +130,8 @@
 
 #ly_m3u8_top_btns {
     position: fixed;
-    width: 100%;
     top: 0px;
-    left: 0;
-    text-align: center;
+    left: calc(50% - 133px);
     z-index: 2147483647;
 }
 
