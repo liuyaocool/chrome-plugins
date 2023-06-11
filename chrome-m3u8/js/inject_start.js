@@ -1,21 +1,21 @@
 checkIfExclude(location.host, () => {
     chrome.runtime.onMessage.addListener((request, sender, response) => {
         switch(request.type) {
-            case 'add_m3u8': addM3u8(request.data); break;
+            case 'add_m3u8': addM3u8(request.url, request.method); break;
         }
     });
     console.log("m3u8插件已监听消息");
 });
 
-const M3U8_NOT = ['js', 'css', 'ts', 'png', 'jpg', 'gif', 'ico', 'woff2', 'ts', 'svg', 'json', 'html'];
+const M3U8_NOT = ['js', 'css', 'ts', 'png', 'jpg', 'jpeg', 'gif', 'ico', 'woff2', 'ts', 'svg', 'json', 'html'];
 // { "url不带?后的参数": 'm3u8' || 'mp4' || 'loading' || false(非任何视频api) }
 const M3U8_TYPE = {};
 const M3U8_MAP = {};
 
 // 此方法会在多个iframe中被执行,可能会出现多个iframe请求同一个url导致多访问题
-function addM3u8(url) {
+function addM3u8(url, method) {
     let name, m3u8URL, xhr;
-    if (M3U8_MAP[url] || !url.startsWith('http')) return;
+    if (M3U8_MAP[url] || !url.startsWith('http') || method.toUpperCase() != 'GET') return;
     m3u8URL = new URL(url);
     name = m3u8URL.pathname.split('.');
     m3u8URL = `${m3u8URL.origin}${m3u8URL.pathname}`;
@@ -29,7 +29,8 @@ function addM3u8(url) {
     xhr = new XMLHttpRequest();
     xhr.open("HEAD", url, false);
     xhr.send();
-    switch (xhr.getResponseHeader('Content-Type')) {
+    let type = xhr.getResponseHeader('Content-Type');
+    switch (type) {
         case 'application/vnd.apple.mpegurl':
             M3U8_TYPE[m3u8URL] = 'm3u8';
             M3U8_MAP[url] = new M3u8Handler(url, name).init();
@@ -39,5 +40,15 @@ function addM3u8(url) {
             M3U8_TYPE[m3u8URL] = 'mp4';
             M3U8_MAP[url] = new Mp4Handler(url, name);
             break;
+        default:
+            if (type.indexOf('video/') >= 0) break;
+            if (type.indexOf('application/javascript') >= 0) break;
+            xhr = new XMLHttpRequest();
+            xhr.open("GET", url, false);
+            xhr.send();
+            if (xhr.response.startsWith('#EXTM3U')) {
+                M3U8_TYPE[m3u8URL] = 'm3u8';
+                M3U8_MAP[url] = new M3u8Handler(url, name).init();
+            }
     }
 }
