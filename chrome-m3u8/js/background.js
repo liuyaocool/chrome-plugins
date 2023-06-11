@@ -16,5 +16,6 @@ chrome.action.onClicked.addListener((tab) => {
 chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((e) => {
     // chrome.runtime.sendMessage({type: type, data: data})
     //     .then(isFunc(callback) ? callback : defaultCallback, onerror);
+    // 如果网页还未注入插件,这里检测到的url就不会被发给网页
     chrome.tabs.sendMessage(e.request.tabId, {type: 'add_m3u8', data: e.request.url})
 });

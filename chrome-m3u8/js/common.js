@@ -48,3 +48,28 @@ function ajax(options) {
     xhr.open("GET", options.url, true);
     xhr.send(null);
 }
+
+/**
+ * 校验是否被排除
+ * @param configStr 配置字符串
+ * @param host 域名
+ * @return {boolean} true:已排除 false:未排除
+ */
+function checkIfExclude(host, success) {
+    chrome.storage.local.get(["ly_m3u8_options"]).then(res => {
+        if (!res['ly_m3u8_options']) {
+            success();
+            return;
+        }
+        let line = res['ly_m3u8_options'].split('\n'), hosts;
+        for (let i = 0; i < line.length; i++) {
+            hosts = line[i].split(',');
+            for (let j = 0; j < hosts.length; j++) {
+                if (hosts[j].trim() == host) {
+                    return;
+                }
+            }
+        }
+        success();
+    });
+}
