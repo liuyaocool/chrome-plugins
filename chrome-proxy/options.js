@@ -156,7 +156,7 @@ function matchProxy(host, globalProxy, prefix, suffix) {
     while((suffix = suffix[hs[i]]) && i-- >= 0) if(typeof suffix == 'string') return suffix;
     i = 0;
     while((prefix = prefix[hs[i]]) && i++ < hs.length) if(typeof prefix == 'string') return prefix;
-    return "PROXY " + globalProxy;
+    return "DIRECT" == globalProxy ? "DIRECT" : ("PROXY " + globalProxy);
 }
 
 function getConfig(url, success, fail) {
