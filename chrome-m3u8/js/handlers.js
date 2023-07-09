@@ -6,7 +6,7 @@ class M3u8Handler {
         this.class = 'ly-m3u8-m3u8';
         this.m3u8RespHtml = '';
         this.tsUrls = []; // 分段链接地址
-        this.tsFiles = []; // 分段链接地址
+        this.tsFiles = []; // ts分段文件
         this.downloadCount = 0; // 下载个数
         this.downloadIndex = 0; // 下一个需要下载的下标
         this.saveIndex = 0; // 下一个需要保存的下标
@@ -68,18 +68,45 @@ class M3u8Handler {
             segsHtm += `<span class="${this.tsFiles[j] ? 'downloaded' : ''}">${j + 1}</span>`;
         }
         document.getElementById('m3u8_segments').innerHTML = segsHtm;
+        let segs = document.querySelectorAll('#m3u8_segments span');
+        let that = this;
+        for (let i = 0; i < segs.length; i++) {
+            segs[i].onclick = function (e) {
+                that.downloadPart(e.target.innerText-1, () => that.serializeSave());
+            }
+        }
     }
 
     startDownload(isStream) {
         for (let i = 0; i < 5; i++) {
-            this.downloadPart(isStream);
+            if (isStream) {
+
+            } else {
+                this.downloadSer();
+            }
         }
     }
 
-    downloadPart(isStream, index, retryNum) {
+    downloadSer(index, retryNum) {
         let that = this;
         index = (index && index >= 0) ? index : that.nextIndex();
         if (index == -1) return;
+        that.downloadPart(index, ()=> {
+            // 异步并发
+            that.downloadSer();
+            that.serializeSave();
+        }, () => {
+            if ((retryNum = retryNum || 0) < 5) {
+                that.downloadSer(index, retryNum + 1);
+            } else {
+                that.downloadSer();
+            }
+        });
+    }
+
+    downloadPart(index, success, fail) {
+        let that = this;
+        if (index < 0 || index >= that.tsUrls.length) return;
         that.partStart(index);
         ajax({
             url: that.tsUrls[index],
@@ -88,22 +115,13 @@ class M3u8Handler {
                 that.partProgress(index, ev.loaded / ev.total);
             },
             success(file) {
-                file = that.decryptor.decode(index, file);
-                // 异步并发
-                that.downloadPart(isStream);
                 // 串行
                 that.setFile(index, file);
                 that.partEnd(index);
-                if (true === isStream) {
-                    that.streamSave(index);
-                } else {
-                    that.serializeSave();
-                }
+                success && success();
             },
             fail() {
-                if ((retryNum = retryNum || 0) < 5) {
-                    that.downloadPart(isStream, index, retryNum + 1);
-                }
+                fail && fail();
             }
         });
     }
@@ -119,8 +137,11 @@ class M3u8Handler {
     }
 
     partProgress(idx, progress) {
-        // document.getElementById('m3u8_segments').children[idx].style.background =
-        //     `linear-gradient(to right, #1c5e4e 0%, #1c5e4e ${(progress*100).toFixed()}%, #2c4b44 0%)`;
+        let pct = (progress*100).toFixed();
+        if (pct % 10 != 0) return;
+        let seg = document.getElementById('m3u8_segments').children[idx];
+        seg.style.background = seg.classList.contains('downloaded')
+            ? '' : `linear-gradient(to right, #eee205 0%, #eee205 ${pct}%, #2c4b44 0%)`;
     }
 
     partEnd(idx) {
@@ -131,9 +152,8 @@ class M3u8Handler {
     }
 
     setFile(index, file) {
-        // todo: decrypt
-
-        this.tsFiles[index] = file;
+        if (this.tsFiles[index]) return;
+        this.tsFiles[index] = this.decryptor.decode(index, file);
         this.downloadCount++;
     }
 
@@ -207,5 +227,5 @@ class DemoHandler {
         this.type = 'demo';
     }
     showInfo() {}
-    startDownload(retryNum) {}
+    startDownload(isStream) {}
 }
