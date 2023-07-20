@@ -221,6 +221,39 @@ class Mp4Handler {
     }
 }
 
+class VideoRecordHandler {
+    constructor(url, name) {
+        this.type = 'dom';
+    }
+    showInfo() {
+
+    }
+    startDownload(isStrram) {
+
+    }
+    videoRecord(videoDom) {
+        let mediaRecorder = new MediaRecorder(videoDom.captureStream(), { mimeType: 'video/x-matroska'});
+        mediaRecorder.ondataavailable = function(event){
+            let videoUrl = URL.createObjectURL(event.data,{type: 'video/x-matroska'});
+            const a = document.createElement('a');
+            a.href = videoUrl;
+            a.download = `${document.title.replaceAll('.', '') || new Date().getTime()}.webm`;
+            a.click();
+            setTimeout(() => window.URL.revokeObjectURL(videoUrl), 5000);
+        };
+        mediaRecorder.start();
+        videoDom.currentTime = 0;
+        videoDom.play();
+        console.log('开始录制.');
+        let intv = setInterval(() => console.log('录制中...'), 10000);
+        // 到点停止录制
+        setTimeout(()=> {
+            mediaRecorder.stop();
+            clearInterval(intv);
+            console.log('结束录制.');
+        }, (videoDom.duration + 10) * 1000);
+    }
+}
 
 class DemoHandler {
     constructor(url, name) {
