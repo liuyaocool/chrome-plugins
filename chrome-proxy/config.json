@@ -21,7 +21,7 @@
         "aliyun.com",
         "apifox.com",
         "baidu.com",
-        "bdstatic.com",
+        "bdstatic.com", // baidu.com contains
         "bilibili.com",
         "cnblogs.com",
         "csdn.net",
@@ -43,6 +43,8 @@
         "qichacha.com",
         "qifu-api.baidubce.com",
         "qq.com",
+        "gtimg.com", // qq.com contains,
+        "idqqimg.com", // qq.com contains,
         "sanweihou.com",
         "sohu.com",
         "speedtest.cn",
