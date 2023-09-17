@@ -1,0 +1,17 @@
+#ly_translate_en2ch{
+    width: 100px;
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    max-height: calc(100% - 20px);
+    overflow-y: auto;
+
+
+    height: 200px;
+    background-color: red;
+    z-index: 9999;
+}
+
+.ly_translate_en2ch_show {
+
+}
