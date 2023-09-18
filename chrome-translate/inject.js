@@ -11,7 +11,7 @@ let divId = 'ly_translate_en2ch';
 
 for (let i = 0; i < 0; i++) {
     document.getElementById(divId).innerHTML += `
-        <div class="ly_translate_en2ch_show">
+        <div>
             <div>this is page</div>
             <div>
                 <p>这是一个页面</p>
@@ -25,19 +25,13 @@ for (let i = 0; i < 0; i++) {
 // <need, {tim:,id:,}>
 const ING = {};
 
-function appendResult(src, trans) {
-    if (ING[src]) {
-        buling(ING[src].id);
-        ING[src].tim = 6;
-        return;
-    }
+function addBox(src) {
     ING[src] = { id: uuid(), tim: 5, leave: false }
     let addDiv = document.createElement('div');
     addDiv.id = ING[src].id;
-    addDiv.classList.add('ly_translate_en2ch_show');
     addDiv.innerHTML = `
         <div>${src}</div>
-        <div>${trans}</div>
+        <div></div>
         <span>关闭(<span id="${ING[src].id}_tim">${ING[src].tim}</span>s)</span>
     `;
     addDiv.querySelector('span').onclick = e => rmv(src);
@@ -45,11 +39,16 @@ function appendResult(src, trans) {
     addDiv.onmouseleave = e => ING[src].leave = false;
     let divDom = document.getElementById(divId);
     divDom.insertBefore(addDiv, divDom.firstChild);
+}
+
+function fillBox(src, transHtml) {
+    let addDiv = document.getElementById(ING[src].id);
+    if (!addDiv) return;
+    addDiv.children[1].innerHTML = transHtml;
     addDiv.style.height = addDiv.clientHeight + 'px';
-    const intv = setInterval(() => {
+    if (!ING[src].intv) ING[src].intv = setInterval(() => {
         if (ING[src].leave) return;
         if (ING[src].tim == 1) {
-            clearInterval(intv);
             rmv(src);
         } else {
             let a = document.getElementById(ING[src].id+'_tim');
@@ -59,8 +58,10 @@ function appendResult(src, trans) {
 }
 
 function rmv(src) {
+    if (!ING[src]) return ;
+    clearInterval(ING[src].intv);
     let resDiv = document.getElementById(ING[src].id);
-    ING[src] = null;
+    delete ING[src];
     if (!resDiv) return;
     let timout = 500;
     if (resDiv.nextElementSibling) {
@@ -77,20 +78,28 @@ function rmv(src) {
     setTimeout(() => resDiv.remove(), timout*1.5);
 }
 
-function translate(str) {
+function translate(src) {
     // todo str anaylize
-    enToChGoogle(str);
+    if (!src || !src.trim()) return;
+    src = src.trim();
+    if (ING[src]) {
+        buling(ING[src].id);
+        ING[src].tim = 6;
+        return;
+    }
+
+    addBox(src);
+    enToChGoogle(src);
 }
 
 function enToChGoogle(str) {
-    if (!str || !str.trim()) return;
-    str = str.trim();
     let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
+            let trans;
             if (xhr.status >= 200 && xhr.status < 300) {
                 let res = JSON.parse(xhr.response);
-                let trans = `<p>${res.sentences[0].trans}</p>`;
+                trans = `<p>${res.sentences[0].trans}</p>`;
                 let list = res.dict;
                 if (list && list.length > 0) {
                     for (let i = 0; i < list.length; i++) {
@@ -109,10 +118,10 @@ function enToChGoogle(str) {
                         }
                     }
                 }
-                appendResult(str, trans);
             } else {
-                alert("err");
+                trans = xhr.response;
             }
+            fillBox(str, trans);
         }
     };
     xhr.open("GET",
