@@ -1,5 +1,5 @@
 document.onmouseup = function (e) {
-    translate(document.getSelection().toString());
+    translate();
 }
 
 let divId = 'ly_translate_en2ch';
@@ -78,8 +78,8 @@ function rmv(src) {
     setTimeout(() => resDiv.remove(), timout*1.5);
 }
 
-function translate(src) {
-    // todo str anaylize
+function translate(e) {
+    let src = document.getSelection().toString();
     if (!src || !src.trim()) return;
     src = src.trim();
     if (ING[src]) {
@@ -93,6 +93,12 @@ function translate(src) {
 }
 
 function enToChGoogle(str) {
+    let lan = getLanguage(str);
+    switch (lan) {
+        case 'en': lan = 'en'; break;
+        case 'ch': lan = 'zh-CN'; break;
+        default: fillBox(str, '未选中 中文或英文'); return;
+    }
     let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -124,8 +130,9 @@ function enToChGoogle(str) {
             fillBox(str, trans);
         }
     };
+    // `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lan}&dj=1&dt=t&dt=bd&dt=qc&dt=rm&dt=ex&dt=at&dt=ss&dt=rw&dt=ld&q=${str}&tk=702621.702621`
     xhr.open("GET",
-        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=zh-CN&dj=1&dt=t&dt=bd&dt=qc&dt=rm&dt=ex&dt=at&dt=ss&dt=rw&dt=ld&q=${str}&tk=389519.389519`,
+        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lan}&dj=1&dt=t&dt=bd&dt=qc&dt=rm&dt=ex&dt=at&dt=ss&dt=rw&dt=ld&q=${str}&tk=389519.389519`,
         true);
     xhr.send(null);
 }
@@ -139,4 +146,16 @@ function buling(id) {
 // 生成一个随机ID，使用时间戳和随机数
 function uuid() {
     return `${new Date().getTime()}${Math.floor(Math.random() * 10000)}`;
+}
+
+function getLanguage(str) {
+    const lanPat = {
+        en: [/^[a-zA-Z]+$/, 'ch'],
+        ch: [/[\u4e00-\u9fa5]/, 'en']
+    };
+    for (let i = 0; i < str.length; i++)
+        for (let lan in lanPat)
+            if (lanPat[lan][0].test(str.charAt(i)))
+                return lanPat[lan][1];
+    return '';
 }
