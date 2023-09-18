@@ -1,11 +1,13 @@
 #ly_translate_en2ch{
-    width: 200px;
     position: fixed;
+    padding: 10px;
     right: 10px;
     top: 10px;
+    width: 260px;
     max-height: calc(100% - 20px);
-    overflow-y: auto ;
-    /*overflow-x: visible;*/
+    overflow: auto;
+    /* padding 向内占用 */
+    box-sizing: border-box;
     z-index: 9999;
 }
 
@@ -30,7 +32,7 @@
 }
 
 #ly_translate_en2ch > div > div:nth-of-type(2) {
-    font-size: 16px;
+    font-size: 13px;
 }
 
 #ly_translate_en2ch > div > span {
@@ -40,4 +42,18 @@
     right: 3px;
     color: red;
     cursor: pointer;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.buling {
+    animation: 100ms 2 shake;
+}
+
+p {
+    margin: 0;
 }
