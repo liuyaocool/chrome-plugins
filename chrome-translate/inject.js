@@ -11,15 +11,28 @@ let divId = 'ly_translate_en2ch';
 
 for (let i = 0; i < 0; i++) {
     document.getElementById(divId).innerHTML += `
-        <div>
-            <div>this is page</div>
-            <div>
-                <p>这是一个页面</p>
-                <p>sss: 这是一个页面</p>
-                <p>这是一个页面</p>
-            </div>
-            <span>关闭(5s)</span>
-        </div>`;
+<div id="1695101791448479">
+        <div class="ly_trnslate_src">样式</div>
+        <div class="ly_trnslate_ret">
+        <p>style</p>
+        <p>noun:<span>style</span><span>pattern</span><span>form</span><span>type</span></p>
+        <p></p>
+        </div>
+        <span class="ly_trnslate_close">
+            关闭(<span id="1695101791448479_tim">1</span>s)
+        </span>
+    </div>
+        <div id="aaaa_${i}">
+            <div class="ly_trnslate_src">this is page</div>
+            <div class="ly_trnslate_ret"><p>result</p><p>noun:<span>result</span><span>outcome</span><span>consequence</span><span>effect</span><span>consequent</span><span>upshot</span><span>payoff</span><span>sequel</span><span>educt</span><span>bottom line</span><span>event</span></p><p>verb:<span>slay</span><span>finish off</span><span>kill</span></p><p><span>Results</span></p></div>
+            <span class="ly_trnslate_close">关闭(5s)</span>
+        </div>
+        <div id="bbbb_${i}">
+            <div class="ly_trnslate_src">this is page</div>
+            <div class="ly_trnslate_ret"><p>车轮</p><p>noun:<span>轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮轮</span><span>车轮</span><span>轮子</span><span>毂</span><span>轱</span></p><p>verb:<span>盘旋</span><span>翔</span></p><p><span>推</span></p></div>
+            <span class="ly_trnslate_close">关闭(5s)</span>
+        </div>
+`;
 }
 
 // <need, {tim:,id:,}>
@@ -30,9 +43,11 @@ function addBox(src) {
     let addDiv = document.createElement('div');
     addDiv.id = ING[src].id;
     addDiv.innerHTML = `
-        <div>${src}</div>
-        <div></div>
-        <span>关闭(<span id="${ING[src].id}_tim">${ING[src].tim}</span>s)</span>
+        <div class="ly_trnslate_src">${src}</div>
+        <div class="ly_trnslate_ret"></div>
+        <span class="ly_trnslate_close">
+            关闭(<span id="${ING[src].id}_tim">${ING[src].tim}</span>s)
+        </span>
     `;
     addDiv.querySelector('span').onclick = e => rmv(src);
     addDiv.onmouseover = e => ING[src].leave = true;
@@ -105,13 +120,15 @@ function enToChGoogle(str) {
             let trans;
             if (xhr.status >= 200 && xhr.status < 300) {
                 let res = JSON.parse(xhr.response);
-                trans = `<p>${res.sentences[0].trans}</p>`;
+                let word = res.sentences[0].trans, a = [word];
+                trans = `<p>${word}</p>`;
                 let list = res.dict;
                 if (list && list.length > 0) {
                     for (let i = 0; i < list.length; i++) {
                         trans += `<p>${list[i].pos}:`;
                         for (let j = 0; j < list[i].entry.length; j++) {
-                            trans += `${list[i].entry[j].word}, `;
+                            trans += `<span>${word = list[i].entry[j].word}</span>`;
+                            a.push(word);
                         }
                         trans += '</p>';
                     }
@@ -120,8 +137,12 @@ function enToChGoogle(str) {
                     for (let i = 0; i < list.length; i++) {
                         trans += `<p>`;
                         for (let j = 0; j < list[i].alternative.length; j++) {
-                            trans += `${list[i].alternative[j].word_postproc}, `
+                            word = list[i].alternative[j].word_postproc;
+                            if (a.indexOf(word) >= 0) continue;
+                            trans += `<span>${word}</span>`
+                            a.push(word);
                         }
+                        trans += '</p>';
                     }
                 }
             } else {

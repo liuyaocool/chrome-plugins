@@ -1,6 +1,5 @@
 #ly_translate_en2ch{
     position: fixed;
-    padding: 10px;
     right: 10px;
     top: 10px;
     width: 260px;
@@ -11,31 +10,51 @@
     z-index: 9999;
 }
 
-#ly_translate_en2ch > div {
-    margin-bottom: 10px;
-    border-radius: 5px;
-    text-align: left;
-    background-color: #0be8b8e0;
+#ly_translate_en2ch * {
     color: #ac1aff;
+    text-align: left;
+}
+
+#ly_translate_en2ch > div {
+    margin: 10px 10px 0 10px;
+    border-radius: 5px;
+    background-color: #0be8b8e0;
     position: relative;
     overflow: hidden;
 }
 
-#ly_translate_en2ch > div > div {
+.ly_trnslate_src, .ly_trnslate_ret {
     padding: 5px 10px;
 }
 
-#ly_translate_en2ch > div > div:nth-of-type(1) {
+.ly_trnslate_src {
     border-bottom: 1px solid gray;
     font-weight: bold;
     font-size: 18px;
+    background-color: rgb(0 255 161);
 }
 
-#ly_translate_en2ch > div > div:nth-of-type(2) {
+.ly_trnslate_ret {
     font-size: 13px;
 }
 
-#ly_translate_en2ch > div > span {
+.ly_trnslate_ret > p:nth-of-type(1) {
+    font-weight: bold;
+    border-bottom: 1px solid #d10d83;
+}
+
+.ly_trnslate_ret span {
+    padding: 2px 5px;
+    margin: 3px 2px 0 0;
+    /*padding: 2px 5px;*/
+    background: #00000090;
+    color: white !important;
+    border-radius: 6px;
+    display: inline-block;
+    /*word-wrap: initial;*/
+}
+
+.ly_trnslate_close {
     position: absolute;
     font-size: 12px;
     top: 3px;
