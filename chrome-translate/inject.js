@@ -102,17 +102,17 @@ function translate(e) {
         ING[src].tim = 6;
         return;
     }
-
+    let lan = getLanguage(src);
+    if (!lan) return;
     addBox(src);
-    enToChGoogle(src);
+    enToChGoogle(src, lan);
 }
 
-function enToChGoogle(str) {
-    let lan = getLanguage(str);
+function enToChGoogle(str, lan) {
     switch (lan) {
         case 'en': lan = 'en'; break;
         case 'ch': lan = 'zh-CN'; break;
-        default: fillBox(str, '未选中 中文或英文'); return;
+        default: fillBox(str, '请选择 中文或英文'); return;
     }
     let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
