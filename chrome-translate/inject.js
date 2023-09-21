@@ -102,7 +102,7 @@ function translate(e) {
         ING[src].tim = 6;
         return;
     }
-    let lan = getLanguage(src);
+    let lan = checkAndGetLan(src);
     if (!lan) return;
     addBox(src);
     enToChGoogle(src, lan);
@@ -146,12 +146,11 @@ function enToChGoogle(str, lan) {
                     }
                 }
             } else {
-                trans = xhr.response;
+                trans = `<p>请求出错: ${xhr.response}</p>`;
             }
             fillBox(str, trans);
         }
     };
-    // `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lan}&dj=1&dt=t&dt=bd&dt=qc&dt=rm&dt=ex&dt=at&dt=ss&dt=rw&dt=ld&q=${str}&tk=702621.702621`
     xhr.open("GET",
         `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lan}&dj=1&dt=t&dt=bd&dt=qc&dt=rm&dt=ex&dt=at&dt=ss&dt=rw&dt=ld&q=${str}&tk=389519.389519`,
         true);
@@ -169,11 +168,15 @@ function uuid() {
     return `${new Date().getTime()}${Math.floor(Math.random() * 10000)}`;
 }
 
-function getLanguage(str) {
+function checkAndGetLan(str) {
+    if (!str || !str.trim()) return '';
     const lanPat = {
         en: [/^[a-zA-Z]+$/, 'ch'],
         ch: [/[\u4e00-\u9fa5]/, 'en']
     };
+    if (str.indexOf('http://') == 0
+        || str.indexOf('https://') == 0
+    ) return '';
     for (let i = 0; i < str.length; i++)
         for (let lan in lanPat)
             if (lanPat[lan][0].test(str.charAt(i)))
