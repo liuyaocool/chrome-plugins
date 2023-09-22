@@ -32,6 +32,10 @@
     font-weight: bold;
     font-size: 18px;
     background-color: rgb(0 255 161);
+    white-space: nowrap; /* 防止文本换行 */
+    overflow: hidden; /* 隐藏溢出内容 */
+    text-overflow: ellipsis; /* 显示省略号 */
+    padding-right: 39px;
 }
 
 .ly_trnslate_ret {

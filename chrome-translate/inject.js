@@ -23,7 +23,7 @@ for (let i = 0; i < 0; i++) {
         </span>
     </div>
         <div id="aaaa_${i}">
-            <div class="ly_trnslate_src">this is page</div>
+            <div class="ly_trnslate_src">swaylock is a screen locking utility for Wayland compositors. It is compatible with any Wayland compositor which implements the ext-session-lock-v1 Wayland protocol.</div>
             <div class="ly_trnslate_ret"><p>result</p><p>noun:<span>result</span><span>outcome</span><span>consequence</span><span>effect</span><span>consequent</span><span>upshot</span><span>payoff</span><span>sequel</span><span>educt</span><span>bottom line</span><span>event</span></p><p>verb:<span>slay</span><span>finish off</span><span>kill</span></p><p><span>Results</span></p></div>
             <span class="ly_trnslate_close">关闭(5s)</span>
         </div>
@@ -117,34 +117,35 @@ function enToChGoogle(str, lan) {
     let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-            let trans;
+            let trans = '';
             if (xhr.status >= 200 && xhr.status < 300) {
-                let res = JSON.parse(xhr.response);
-                let word = res.sentences[0].trans, a = [word];
-                trans = `<p>${word}</p>`;
-                let list = res.dict;
-                if (list && list.length > 0) {
-                    for (let i = 0; i < list.length; i++) {
-                        trans += `<p>${list[i].pos}:`;
-                        for (let j = 0; j < list[i].entry.length; j++) {
-                            trans += `<span>${word = list[i].entry[j].word}</span>`;
-                            a.push(word);
-                        }
-                        trans += '</p>';
+                let i, word, a = [], list, res = JSON.parse(xhr.response);
+                (list = res.sentences) && list.forEach(e => trans += e.trans || '');
+                a.push(trans);
+                trans = `<p>${trans}</p>`;
+                console.log(res.dict);
+                (list = res.dict) && list.forEach(e => {
+                    trans += `<p>${e.pos}:`;
+                    for (let j = 0; j < e.entry.length; j++) {
+                        if (a.indexOf(word = e.entry[j].word) >= 0) continue;
+                        trans += `<span>${word}</span>`;
+                        a.push(word);
+                    }
+                    trans += '</p>';
+                });
+                let words = [];
+                for (list = res.alternative_translations, i = 0; list && i < list.length; i++) {
+                    for (let j = 0; j < list[i].alternative.length; j++) {
+                        (words[j] || (words[j] = [])).push(list[i].alternative[j].word_postproc);
                     }
                 }
-                if ((list = res.alternative_translations) && list.length > 0) {
-                    for (let i = 0; i < list.length; i++) {
-                        trans += `<p>`;
-                        for (let j = 0; j < list[i].alternative.length; j++) {
-                            word = list[i].alternative[j].word_postproc;
-                            if (a.indexOf(word) >= 0) continue;
-                            trans += `<span>${word}</span>`
-                            a.push(word);
-                        }
-                        trans += '</p>';
-                    }
-                }
+                trans += `<p>`;
+                words.forEach(e => {
+                    if (a.indexOf(word = e.join('')) >= 0) return;
+                    trans += `<span>${word}</span>`
+                    a.push(word);
+                });
+                trans += '</p>';
             } else {
                 trans = `<p>请求出错: ${xhr.response}</p>`;
             }
