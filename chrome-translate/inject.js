@@ -1,6 +1,9 @@
-document.onmouseup = function (e) {
-    translate();
-}
+chrome.runtime.onMessage.addListener((request, sender, response) => {
+    switch(request.type) {
+        case 'src': translate(request.data); break;
+        default: break;
+    }
+});
 
 let divId = 'ly_translate_en2ch';
 (() => {
@@ -93,8 +96,7 @@ function rmv(src) {
     setTimeout(() => resDiv.remove(), timout*1.5);
 }
 
-function translate(e) {
-    let src = document.getSelection().toString();
+function translate(src) {
     if (!src || !src.trim()) return;
     src = src.trim();
     if (ING[src]) {

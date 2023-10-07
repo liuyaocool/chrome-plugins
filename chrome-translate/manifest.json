@@ -22,6 +22,11 @@
       "js":["inject.js"],
       "css": ["css/inject.css", "css/shake.css"],
       "matches":["<all_urls>"]
+    }, {
+      "run_at": "document_end",
+      "js":["inject_all.js"],
+      "matches":["<all_urls>"],
+      "all_frames": true
     }
   ],
 
@@ -30,6 +35,8 @@
   },
 
   "permissions": [
+    "activeTab",
+    "tabs",
     "webRequest",
     "scripting",
     "storage"
