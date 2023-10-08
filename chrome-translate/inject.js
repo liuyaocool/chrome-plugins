@@ -175,7 +175,8 @@ function checkAndGetLan(str) {
     if (!str || !str.trim()) return '';
     const lanPat = {
         en: [/^[a-zA-Z]+$/, 'ch'],
-        ch: [/[\u4e00-\u9fa5]/, 'en']
+        ch: [/[\u4e00-\u9fff]/, 'en'],
+        jp: [/[\u3040-\u30ff]/, 'ch'],
     };
     if (str.indexOf('http://') == 0
         || str.indexOf('https://') == 0
