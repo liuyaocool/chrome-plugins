@@ -48,17 +48,20 @@ if(location.href.indexOf('/login/login.init.do') >= 0
 if('jenkins.21tb.com' ==location.host) {
     if ('/' == location.pathname) {
         let tbc_jenkins_list = [
-            '#job_上海云环境备用-jdk1\\.8 > td:nth-child(3) > a',
-            '#job_上海云环境-jdk1\\.8 > td:nth-child(3) > a',
-            null
+            ['#job_上海云环境备用-jdk1\\.8', ' > td:nth-child(7) > a'],
+            ['#job_上海云环境-jdk1\\.8', ' > td:nth-child(7) > a'],
+            0
         ];
         document.onkeydown = function (ev) {
             switch(ev.code) {
                 case 'Escape':
-                    tbc_jenkins_list[2] = tbc_jenkins_list[0]; // middle
-                    tbc_jenkins_list[0] = tbc_jenkins_list[1];
-                    tbc_jenkins_list[1] = tbc_jenkins_list[2];
-                    document.querySelector(tbc_jenkins_list[0]).focus();
+                    tbc_jenkins_list[2] = (tbc_jenkins_list[2] + 1) % (tbc_jenkins_list.length-1);
+                    for (let i = 0; i < tbc_jenkins_list.length - 1; i++) {
+                        document.querySelector(tbc_jenkins_list[i][0]).style.backgroundColor = '';
+                    }
+                    let tbc_jenkins_e = document.querySelector(tbc_jenkins_list[tbc_jenkins_list[2]].join(''));
+                    tbc_jenkins_e.parentElement.parentElement.style.backgroundColor = 'seagreen';
+                    tbc_jenkins_e.focus();
                     break
                 default: break;
             }
