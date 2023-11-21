@@ -3,3 +3,5 @@ test/
 _metadata/
 
 .DS_Store
+
+*.zip
