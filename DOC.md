@@ -143,6 +143,13 @@ https://developer.mozilla.org/zh-CN/docs/Mozilla/Add-ons/WebExtensions/Your_firs
     "name": "插件名称",
     "version": "1.0",
     "description": "插件描述",
+    // 打包插件必填
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "pluginname.61linux.com",
+        "strict_min_version": "54.0"
+      }
+    },
     "icons": {
         "48": "img/icon48.png",
         "96": "img/icon96.png"
