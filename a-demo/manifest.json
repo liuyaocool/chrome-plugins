@@ -1,0 +1,67 @@
+{
+  "manifest_version": 3,
+  "name": "test",
+  "version": "1.0",
+  "description": "test",
+  "icons": {
+    "16": "./assets/icon.png",
+    "32": "./assets/icon.png",
+    "48": "./assets/icon.png",
+    "128": "./assets/icon.png"
+  },
+
+  "options_page": "options.html",
+
+  "action": {
+    "default_title": "点击打开配置"
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "run_at": "document_start",
+      "js":["inject.js"],
+      "css": ["inject.css"], 
+      "matches":["*://*/cloudSetting/*"],
+      "all_frames": true
+    },
+    {
+      "run_at": "document_end",
+      "js":["inject_end.js"],
+      "matches":["*://*/cloudSetting/*"],
+      "all_frames": true
+    }
+  ],
+  
+  // 内容安全政策
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'",
+    "sandbox": "sandbox allow-scripts; script-src 'self'; object-src 'self'"
+  },
+
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules_1.json"
+      }
+    ]
+  },
+
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "activeTab",
+    "declarativeContent",
+    "scripting",
+    "contextMenus", //自定义创建右键菜单API
+    "tabs", //tab选项卡API
+    "storage", //缓存API
+    "webRequest" //监听浏览器请求API
+    // ...
+  ]
+}

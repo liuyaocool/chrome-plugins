@@ -1,0 +1,14 @@
+#ly_test_div{
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    height: 70px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 1000px;
+    padding: 5px 10px;
+    background-color: #44434326;
+    box-shadow: #0000009e 0px 0px 8px 0px;
+    backdrop-filter: blur(2px);
+    z-index: 999999;
+}
