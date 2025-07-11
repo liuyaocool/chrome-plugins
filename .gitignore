@@ -1,6 +1,7 @@
 .idea/
 test/
 _metadata/
+bin/
 
 .DS_Store
 
